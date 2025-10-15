@@ -1,10 +1,11 @@
-// components/Navbar.jsx
-import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, Menu, X, User } from "lucide-react";
+import { useSelector } from 'react-redux';
+import { useState } from "react";
 
-const Navbar = ({ cartItemsCount = 0 }) => {
+const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const cartItemsCount = useSelector((state) => state.cart.totalQuantity);
 
   const navLinks = [
     { name: "Home", href: "/" },

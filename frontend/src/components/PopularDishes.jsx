@@ -5,10 +5,33 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/splide.min.css";
 import { Star, Plus, ChevronLeft, ChevronRight, Leaf } from "lucide-react";
 import { food_list } from "../assets/frontend_assets/assets";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addItem,
+  incrementQuantity,
+  decrementQuantity,
+} from "../store/cart/cartSlice.js";
+import { Minus } from "lucide-react";
+
 
 const PopularDishes = () => {
+  const dispatch = useDispatch();
+
+  const cartItems = useSelector((state) => state.cart.items);
+  console.log(cartItems);
+  
   const splideRef = useRef(null);
   const popularItems = food_list.slice(0, 12);
+
+  const getItemQuantity = (itemId) => {
+    const item = cartItems.find((i) => i._id === itemId);
+    
+    return item ? item.quantity : 0;
+  };
+
+  const handleAddToCart = (dish) => {
+    dispatch(addItem(dish));
+  };
 
   const handlePrevious = () => {
     if (splideRef.current) {
@@ -119,9 +142,37 @@ const PopularDishes = () => {
                       <span className="text-2xl font-bold text-orange-500">
                         ${dish.price}
                       </span>
-                      <button className="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 transition-colors shadow-md hover:shadow-lg">
-                        <Plus size={20} />
-                      </button>
+                      {getItemQuantity(dish._id) === 0 ? (
+                        <button
+                          onClick={() => handleAddToCart(dish)}
+                          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors shadow-md hover:shadow-lg flex items-center gap-1"
+                        >
+                          <Plus size={20} />
+                          Add
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2 bg-orange-500 text-white rounded-lg px-2 py-1">
+                          <button
+                            onClick={() =>
+                              dispatch(decrementQuantity(dish._id))
+                            }
+                            className="hover:bg-orange-600 p-1 rounded"
+                          >
+                            <Minus size={18} />
+                          </button>
+                          <span className="font-semibold w-8 text-center">
+                            {getItemQuantity(dish._id)}
+                          </span>
+                          <button
+                            onClick={() =>
+                              dispatch(incrementQuantity(dish._id))
+                            }
+                            className="hover:bg-orange-600 p-1 rounded"
+                          >
+                            <Plus size={18} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
